@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="feathers-createjs" default="swc" basedir=".">
+	
+	<!-- build.local.properties and sdk.local.properties are optional files.
+		they may be used to override properties defined in build.properties or
+		sdk.properties. -->
+	<property file="./sdk.local.properties"/>
+	<property file="./sdk.properties"/>
+	<property file="./build.local.properties"/>
+	<property file="./build.properties"/>
+
+	<available file="${externc}" type="file" property="externc.available"/>
+	<fail unless="${externc.available}" message="Cannot find externc.jar. Define a property named sdk.root that contains path to FlexJS SDK in the file sdk.local.properties."/>
+
+	<target name="swc" depends="-prepare,-build-externs,-build-swc" description="Builds feathers-createjs.swc"/>
+
+	<target name="-prepare">
+		<delete dir="${output.path}"/>
+		<delete dir="${externs.path}/generated"/>
+	</target>
+
+	<target name="-build-externs">
+		<!-- transpile JS externs into AS3 externs -->
+		<echo message="Converting CreateJS externs"/>
+		<java jar="${externc}" dir="${basedir}" fork="true" failonerror="false">
+			<arg value="+flexlib=${sdk.root}/frameworks"/>
+			<arg value="+js.externs=${js.externs.path}"/>
+			<arg value="-load-config"/>
+			<arg value="${externs.path}/createjs-js-config.xml"/>
+		</java>
+		<!-- use AS3 externs to create SWC file -->
+		<echo message="Compiling CreateJS externs"/>
+		<java jar="${compc.as3}" fork="true" failonerror="true">
+			<arg value="+flexlib=${sdk.root}/frameworks"/>
+			<arg value="-external-library-path=${js.swc}"/>
+			<arg value="-load-config"/>
+			<arg value="${externs.path}/createjs-as3-config.xml"/>
+			<arg value="-output"/>
+			<arg value="${externs.output.path}/createjs.swc"/>
+		</java>
+		<echo message="Converting Zynga Scroller externs"/>
+		<java jar="${externc}" dir="${basedir}" fork="true" failonerror="false">
+			<arg value="+flexlib=${sdk.root}/frameworks"/>
+			<arg value="+js.externs=${js.externs.path}"/>
+			<arg value="-load-config"/>
+			<arg value="${externs.path}/zynga-scroller-js-config.xml"/>
+		</java>
+		<echo message="Compiling Zynga Scroller externs"/>
+		<java jar="${compc.as3}" fork="true" failonerror="true">
+			<arg value="+flexlib=${sdk.root}/frameworks"/>
+			<arg value="-external-library-path=${js.swc}"/>
+			<arg value="-load-config"/>
+			<arg value="${externs.path}/zynga-scroller-as3-config.xml"/>
+			<arg value="-output"/>
+			<arg value="${externs.output.path}/zynga-scroller.swc"/>
+		</java>
+		<!-- cleanup files that we don't need anymore -->
+		<delete dir="${externs.path}/generated"/>
+	</target>
+
+	<target name="-build-swc">
+		<echo message="Building feathers-createjs.swc"/>
+		<!-- first, transpile the AS3 classes to JS. we'll include them in the
+			SWC file in the next step. -->
+		<java jar="${compc.js}" dir="${basedir}" fork="true" failonerror="true">
+			<jvmarg value="-Dflexcompiler=${sdk.root}"/>
+			<jvmarg value="-Dflexlib=${sdk.root}/frameworks"/>
+			<arg value="+flexlib=${sdk.root}/frameworks"/>
+			<arg value="-js-output-type=jsc"/>
+			<arg value="-source-path+=${source.path}"/>
+			<arg value="-include-sources+=${source.path}"/>
+			<!-- js.swc contains core JS classes for browser -->
+			<arg value="-external-library-path=${js.swc}"/>
+			<!-- the externs SWCs we created in the -build-externs target -->
+			<arg value="-external-library-path+=${externs.output.path}"/>
+			<arg value="-output=${output.path}/js/src"/>
+		</java>
+		<!-- then, create the SWC file with AS3 classes, and include the
+			transpiled JS files too. -->
+		<java jar="${compc.as3}" dir="${basedir}" fork="true" failonerror="true">
+			<jvmarg value="-Dflexcompiler=${sdk.root}"/>
+			<jvmarg value="-Dflexlib=${sdk.root}/frameworks"/>
+			<arg value="+flexlib=${sdk.root}/frameworks"/>
+			<arg value="-source-path+=${source.path}"/>
+			<arg value="-include-sources+=${source.path}"/>
+			<arg value="-external-library-path=${js.swc}"/>
+			<arg value="-external-library-path+=${externs.output.path}"/>
+			<!-- these are the transpiled JS files -->
+			<arg value="-include-file+=js/src/*,${output.path}/js/src/*"/>
+			<arg value="-output=${output.path}/feathers-createjs.swc"/>
+		</java>
+		<!-- cleanup files that we don't need anymore -->
+		<delete dir="${output.path}/js"/>
+	</target>
+</project>
