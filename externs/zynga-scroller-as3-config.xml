@@ -1,0 +1,23 @@
+<flex-config>
+	<compiler>
+		<accessible>true</accessible>
+
+		<debug>true</debug>
+		
+		<locale/>
+		
+		<library-path/>
+		
+		<source-path>
+			<path-element>generated/classes</path-element>
+			<path-element>generated/interfaces</path-element>
+		</source-path>
+		
+		<warn-no-constructor>false</warn-no-constructor>
+	</compiler>
+	
+	<include-sources>
+		<path-element>generated/classes</path-element>
+		<path-element>generated/interfaces</path-element>
+	</include-sources>
+</flex-config>

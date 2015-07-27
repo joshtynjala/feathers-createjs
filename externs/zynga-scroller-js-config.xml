@@ -1,0 +1,23 @@
+<flex-config>
+
+	<compiler>
+		<accessible>true</accessible>
+		
+		<locale/>
+		
+		<library-path/>
+		
+		<warn-no-constructor>false</warn-no-constructor>
+	</compiler>
+
+    <external-externs>
+        <path-element>${js.externs}/es3.js</path-element>
+        <path-element>${js.externs}/es5.js</path-element>
+    </external-externs>
+	
+	<external>
+		<path-element>zynga-scroller/zynga-scroller-externs.js</path-element>
+	</external>
+	
+	<as-root>generated</as-root>
+</flex-config>
