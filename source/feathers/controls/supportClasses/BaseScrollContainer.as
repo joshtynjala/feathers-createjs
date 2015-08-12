@@ -307,11 +307,11 @@ package feathers.controls.supportClasses
 		protected function baseScrollContainer_mousedownHandler(event:createjs.MouseEvent):void
 		{
 			var nativeEvent:UIEvent = event.nativeEvent;
-			if(createjs.Touch.isSupported())
+			if("ontouchstart" in window) //TouchEvent
 			{
 				var touches:Object = TouchEvent(nativeEvent).touches;
 			}
-			else
+			else //MouseEvent and PointerEvent
 			{
 				touches = [nativeEvent];
 			}
@@ -326,11 +326,11 @@ package feathers.controls.supportClasses
 		protected function baseScrollContainer_stage_stagemousemoveHandler(event:createjs.MouseEvent):void
 		{
 			var nativeEvent:UIEvent = event.nativeEvent;
-			if(createjs.Touch.isSupported())
+			if("ontouchstart" in window) //TouchEvent
 			{
 				var touches:Object = TouchEvent(nativeEvent).touches;
 			}
-			else
+			else //MouseEvent and PointerEvent
 			{
 				touches = [nativeEvent];
 			}
