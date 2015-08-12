@@ -1,10 +1,9 @@
 package feathers.controls
 {
 	import createjs.DisplayObject;
-	import createjs.EventDispatcher;
 	import createjs.MouseEvent;
 	import createjs.Point;
-	
+
 	import feathers.core.FeathersControl;
 	import feathers.core.IFeathersDisplayObject;
 	import feathers.core.IStateContext;
@@ -12,9 +11,10 @@ package feathers.controls
 	import feathers.core.InvalidationFlag;
 	import feathers.core.MeasureBounds;
 	import feathers.events.FeathersEvent;
-	
+
 	[Event(name="stateChange",type="feathers.events.FeathersEvent")]
 	[Event(name="trigger",type="feathers.events.FeathersEvent")]
+	[Event(name="longPress",type="feathers.events.FeathersEvent")]
 
 	public class SimpleButton extends FeathersControl implements IStateContext
 	{
@@ -27,11 +27,20 @@ package feathers.controls
 			this._measureBounds = new MeasureBounds();
 			this._currentState = ButtonState.UP;
 			this._skinsForStates = {};
+			this["simpleButton_rolloverHandler"] = this.simpleButton_rolloverHandler.bind(this);
+			this.addEventListener("rollover", this.simpleButton_rolloverHandler);
+			this["simpleButton_rolloutHandler"] = this.simpleButton_rolloutHandler.bind(this);
+			this.addEventListener("rollout", this.simpleButton_rolloutHandler);
 			this["simpleButton_mousedownHandler"] = this.simpleButton_mousedownHandler.bind(this);
 			this.addEventListener("mousedown", this.simpleButton_mousedownHandler);
 			this["simpleButton_stage_stagemouseupHandler"] = this.simpleButton_stage_stagemouseupHandler.bind(this);
 			this["currentSkin_resizeHandler"] = this.currentSkin_resizeHandler.bind(this);
+			this["simpleButton_longPress_tickHandler"] = this.simpleButton_longPress_tickHandler.bind(this);
 		}
+		
+		protected var _mouseIsDown:Boolean = false;
+
+		protected var _mouseIsOver:Boolean = false;
 		
 		/**
 		 * @private
@@ -88,6 +97,45 @@ package feathers.controls
 			}
 			this._skin = value;
 			this.invalidate(InvalidationFlag.STYLES);
+		}
+		
+		protected var _keepDownStateOnRollOut:Boolean = false;
+		
+		public function get keepDownStateOnRollOut():Boolean
+		{
+			return this._keepDownStateOnRollOut;
+		}
+
+		public function set keepDownStateOnRollOut(value:Boolean):void
+		{
+			this._keepDownStateOnRollOut = value;
+		}
+		
+		protected var _mousedownTime:Number;
+		protected var _waitingForLongPress:Boolean = false;
+
+		protected var _longPressEnabled:Boolean = false;
+
+		public function get longPressEnabled():Boolean
+		{
+			return this._longPressEnabled;
+		}
+
+		public function set longPressEnabled(value:Boolean):void
+		{
+			this._longPressEnabled = value;
+		}
+
+		protected var _longPressDuration:Number = 0.5;
+
+		public function get longPressDuration():Number
+		{
+			return this._longPressDuration;
+		}
+
+		public function set longPressDuration(value:Number):void
+		{
+			this._longPressDuration = value;
 		}
 
 		/**
@@ -217,6 +265,68 @@ package feathers.controls
 				}
 			}
 		}
+
+		/**
+		 * @private
+		 */
+		protected function changeState(value:String):void
+		{
+			if(this._currentState === value)
+			{
+				return;
+			}
+			this._currentState = value;
+			this.invalidate(InvalidationFlag.STATE);
+			FeathersEvent.dispatch(this, FeathersEvent.STATE_CHANGE, false, false);
+		}
+
+		/**
+		 * @private
+		 */
+		protected function trigger():void
+		{
+			FeathersEvent.dispatch(this, FeathersEvent.TRIGGER, false, false);
+		}
+
+		/**
+		 * @private
+		 */
+		protected function simpleButton_rolloverHandler(event:createjs.MouseEvent):void
+		{
+			if(!this._enabled)
+			{
+				return;
+			}
+			this._mouseIsOver = true;
+			if(this._mouseIsDown)
+			{
+				this.changeState(ButtonState.DOWN);
+			}
+			else
+			{
+				this.changeState(ButtonState.OVER);
+			}
+		}
+
+		/**
+		 * @private
+		 */
+		protected function simpleButton_rolloutHandler(event:createjs.MouseEvent):void
+		{
+			if(!this._enabled)
+			{
+				return;
+			}
+			this._mouseIsOver = false;
+			if(this._mouseIsDown && this._keepDownStateOnRollOut)
+			{
+				this.changeState(ButtonState.DOWN);
+			}
+			else
+			{
+				this.changeState(ButtonState.UP);
+			}
+		}
 		
 		/**
 		 * @private
@@ -227,9 +337,14 @@ package feathers.controls
 			{
 				return;
 			}
-			this._currentState = ButtonState.DOWN;
-			this.invalidate(InvalidationFlag.STATE);
-			FeathersEvent.dispatch(this, FeathersEvent.STATE_CHANGE, false, false);
+			this._mouseIsDown = true;
+			this.changeState(ButtonState.DOWN);
+			if(this._longPressEnabled)
+			{
+				this._mousedownTime = Date.now();
+				this._waitingForLongPress = true;
+				this.addEventListener("tick", this.simpleButton_longPress_tickHandler);
+			}
 			//the target may be a skin that gets removed when the button state
 			//changes, so we should listen for an event from the stage
 			this.getStage().addEventListener("stagemouseup", this.simpleButton_stage_stagemouseupHandler);
@@ -240,14 +355,35 @@ package feathers.controls
 		 */
 		protected function simpleButton_stage_stagemouseupHandler(event:createjs.MouseEvent):void
 		{
+			this.removeEventListener("tick", this.simpleButton_longPress_tickHandler);
 			this.getStage().removeEventListener("stagemouseup", this.simpleButton_stage_stagemouseupHandler);
-			this._currentState = ButtonState.UP;
-			this.invalidate(InvalidationFlag.STATE);
-			FeathersEvent.dispatch(this, FeathersEvent.STATE_CHANGE, false, false);
-			var local:Point = this.globalToLocal(event.stageX, event.stageY);
-			if(this.hitTest(local.x, local.y))
+			this._mouseIsDown = false;
+			if(this._mouseIsOver)
 			{
-				FeathersEvent.dispatch(this, FeathersEvent.TRIGGER, false, false);
+				this.changeState(ButtonState.OVER);
+			}
+			else
+			{
+				this.changeState(ButtonState.UP);
+			}
+			var local:Point = this.globalToLocal(event.stageX, event.stageY);
+			if((this._waitingForLongPress || !this._longPressEnabled) && this.hitTest(local.x, local.y))
+			{
+				this.trigger();
+			}
+		}
+
+		/**
+		 * @private
+		 */
+		protected function simpleButton_longPress_tickHandler(event:createjs.Event):void
+		{
+			var accumulatedTime:Number = (Date.now() - this._mousedownTime) / 1000;
+			if(accumulatedTime >= this._longPressDuration)
+			{
+				this.removeEventListener("tick", this.simpleButton_longPress_tickHandler);
+				this._waitingForLongPress = false;
+				FeathersEvent.dispatch(this, FeathersEvent.LONG_PRESS, false, false);
 			}
 		}
 		

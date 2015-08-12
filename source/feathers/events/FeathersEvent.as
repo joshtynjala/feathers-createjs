@@ -17,6 +17,7 @@ package feathers.events
 		public static const SCROLL_COMPLETE:String = "scrollComplete";
 		public static const STATE_CHANGE:String = "stateChange";
 		public static const TRIGGER:String = "trigger";
+		public static const LONG_PRESS:String = "longPress";
 
 		/**
 		 * @private
