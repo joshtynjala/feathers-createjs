@@ -39,8 +39,7 @@ package feathers.skins
 				}
 				else
 				{
-					this["image_loadHandler"] = this.image_loadHandler.bind(this);
-					this._image.addEventListener("load", this.image_loadHandler, false);
+					this._image.addEventListener("load", image_loadHandler, false);
 				}
 			}
 			else if(this._canvas)
@@ -56,7 +55,7 @@ package feathers.skins
 				}
 				else
 				{
-					this._video.addEventListener("loadedmetadata", this.video_loadedmetadataHandler, false);
+					this._video.addEventListener("loadedmetadata", video_loadedmetadataHandler, false);
 				}
 			}
 		}

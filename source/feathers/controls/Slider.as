@@ -20,11 +20,6 @@ package feathers.controls
 		public function Slider()
 		{
 			super();
-			this["trackSkin_resizeHandler"] = this.trackSkin_resizeHandler.bind(this);
-			this["thumbSkin_resizeHandler"] = this.thumbSkin_resizeHandler.bind(this);
-			this["thumbSkin_mousedownHandler"] = this.thumbSkin_mousedownHandler.bind(this);
-			this["slider_stage_stagemousemoveHandler"] = this.slider_stage_stagemousemoveHandler.bind(this);
-			this["slider_stage_stagemouseupHandler"] = this.slider_stage_stagemouseupHandler.bind(this);
 		}
 		
 		/**
@@ -246,8 +241,8 @@ package feathers.controls
 			var oldSkin:DisplayObject = this._thumbSkin as DisplayObject;
 			if(oldSkin)
 			{
-				this._thumbSkin.removeEventListener("mousedown", this.thumbSkin_mousedownHandler);
-				this._thumbSkin.removeEventListener(FeathersEvent.RESIZE, this.thumbSkin_resizeHandler);
+				this._thumbSkin.removeEventListener("mousedown", thumbSkin_mousedownHandler);
+				this._thumbSkin.removeEventListener(FeathersEvent.RESIZE, thumbSkin_resizeHandler);
 				if(oldSkin.parent === this)
 				{
 					this.removeChild(oldSkin);
@@ -257,8 +252,8 @@ package feathers.controls
 			if(this._thumbSkin)
 			{
 				this.addChild(DisplayObject(this._thumbSkin));
-				this._thumbSkin.addEventListener(FeathersEvent.RESIZE, this.thumbSkin_resizeHandler);
-				this._thumbSkin.addEventListener("mousedown", this.thumbSkin_mousedownHandler);
+				this._thumbSkin.addEventListener(FeathersEvent.RESIZE, thumbSkin_resizeHandler);
+				this._thumbSkin.addEventListener("mousedown", thumbSkin_mousedownHandler);
 			}
 			this.invalidate(InvalidationFlag.STYLES);
 		}
@@ -285,7 +280,7 @@ package feathers.controls
 			var oldSkin:DisplayObject = this._trackSkin as DisplayObject;
 			if(oldSkin)
 			{
-				this._trackSkin.removeEventListener(FeathersEvent.RESIZE, this.trackSkin_resizeHandler);
+				this._trackSkin.removeEventListener(FeathersEvent.RESIZE, trackSkin_resizeHandler);
 				if(oldSkin.parent === this)
 				{
 					this.removeChild(oldSkin);
@@ -295,7 +290,7 @@ package feathers.controls
 			if(this._trackSkin)
 			{
 				this.addChildAt(DisplayObject(this._trackSkin), 0);
-				this._trackSkin.addEventListener(FeathersEvent.RESIZE, this.trackSkin_resizeHandler);
+				this._trackSkin.addEventListener(FeathersEvent.RESIZE, trackSkin_resizeHandler);
 			}
 			this.invalidate(InvalidationFlag.STYLES);
 		}
@@ -468,8 +463,8 @@ package feathers.controls
 			{
 				return;
 			}
-			this.getStage().addEventListener("stagemousemove", this.slider_stage_stagemousemoveHandler);
-			this.getStage().addEventListener("stagemouseup", this.slider_stage_stagemouseupHandler);
+			this.getStage().addEventListener("stagemousemove", slider_stage_stagemousemoveHandler);
+			this.getStage().addEventListener("stagemouseup", slider_stage_stagemouseupHandler);
 			var local:Point = this.globalToLocal(event.stageX, event.stageY);
 			this._pointerStartX = local.x;
 			this._pointerStartY = local.y;
@@ -496,8 +491,8 @@ package feathers.controls
 		 */
 		protected function slider_stage_stagemouseupHandler(event:createjs.MouseEvent):void
 		{
-			this.getStage().removeEventListener("stagemousemove", this.slider_stage_stagemousemoveHandler);
-			this.getStage().removeEventListener("stagemouseup", this.slider_stage_stagemouseupHandler);
+			this.getStage().removeEventListener("stagemousemove", slider_stage_stagemousemoveHandler);
+			this.getStage().removeEventListener("stagemouseup", slider_stage_stagemouseupHandler);
 			this.isDragging = false;
 			if(!this._liveDragging)
 			{

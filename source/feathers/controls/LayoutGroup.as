@@ -20,9 +20,6 @@ package feathers.controls
 		{
 			this.items = new Vector.<DisplayObject>();
 			super();
-			this["layout_changeHandler"] = this.layout_changeHandler.bind(this);
-			this["child_resizeHandler"] = this.child_resizeHandler.bind(this);
-			this["child_layoutDataChangeHandler"] = this.child_layoutDataChangeHandler.bind(this);
 		}
 		
 		/**
@@ -69,7 +66,7 @@ package feathers.controls
 			}
 			if(this._layout)
 			{
-				this._layout.removeEventListener(FeathersEvent.CHANGE, this.layout_changeHandler);
+				this._layout.removeEventListener(FeathersEvent.CHANGE, layout_changeHandler);
 			}
 			this._layout = value;
 			if(this._layout)
@@ -78,7 +75,7 @@ package feathers.controls
 				{
 					IVirtualLayout(this._layout).useVirtualLayout = false;
 				}
-				this._layout.addEventListener(FeathersEvent.CHANGE, this.layout_changeHandler);
+				this._layout.addEventListener(FeathersEvent.CHANGE, layout_changeHandler);
 			}
 			this.invalidate(InvalidationFlag.LAYOUT);
 		}
@@ -109,11 +106,11 @@ package feathers.controls
 			var child:DisplayObject = this.getChildAt(index);
 			if(child is IFeathersDisplayObject)
 			{
-				child.removeEventListener(FeathersEvent.RESIZE, this.child_resizeHandler);
+				child.removeEventListener(FeathersEvent.RESIZE, child_resizeHandler);
 			}
 			if(child is ILayoutDisplayObject)
 			{
-				child.removeEventListener(FeathersEvent.LAYOUT_DATA_CHANGE, this.child_layoutDataChangeHandler);
+				child.removeEventListener(FeathersEvent.LAYOUT_DATA_CHANGE, child_layoutDataChangeHandler);
 			}
 			this.items.splice(index, 1);
 			this.invalidate(InvalidationFlag.LAYOUT);
@@ -185,11 +182,11 @@ package feathers.controls
 		{
 			if(child is IFeathersDisplayObject)
 			{
-				child.addEventListener(FeathersEvent.RESIZE, this.child_resizeHandler);
+				child.addEventListener(FeathersEvent.RESIZE, child_resizeHandler);
 			}
 			if(child is ILayoutDisplayObject)
 			{
-				child.addEventListener(FeathersEvent.LAYOUT_DATA_CHANGE, this.child_layoutDataChangeHandler);
+				child.addEventListener(FeathersEvent.LAYOUT_DATA_CHANGE, child_layoutDataChangeHandler);
 			}
 			var oldIndex:int = this.items.indexOf(child);
 			if(oldIndex === index)

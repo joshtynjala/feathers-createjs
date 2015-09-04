@@ -20,16 +20,10 @@ package feathers.controls.supportClasses
 			this.viewPort = viewPort;
 			this.addChildAt(DisplayObject(this.viewPort), 0);
 			this._measureBounds = new MeasureBounds();
-			this["baseScrollContainer_viewPort_resizeHandler"] = this.baseScrollContainer_viewPort_resizeHandler.bind(this);
-			this.viewPort.addEventListener(FeathersEvent.RESIZE, this.baseScrollContainer_viewPort_resizeHandler);
-			this["baseScrollContainer_mousedownHandler"] = this.baseScrollContainer_mousedownHandler.bind(this);
-			this.addEventListener("mousedown", this.baseScrollContainer_mousedownHandler);
-			this["baseScrollContainer_stage_stagemousemoveHandler"] = this.baseScrollContainer_stage_stagemousemoveHandler.bind(this);
-			this["baseScrollContainer_stage_stagemouseupHandler"] = this.baseScrollContainer_stage_stagemouseupHandler.bind(this);
-			this["baseScrollContainer_scroller_scrollCallback"] = this.baseScrollContainer_scroller_scrollCallback.bind(this);
-			this["baseScrollContainer_scroller_scrollingCompleteCallback"] = this.baseScrollContainer_scroller_scrollingCompleteCallback.bind(this);
-			this._scroller = new Scroller(this.baseScrollContainer_scroller_scrollCallback);
-			this._scroller.options.scrollingComplete = this.baseScrollContainer_scroller_scrollingCompleteCallback;
+			this.viewPort.addEventListener(FeathersEvent.RESIZE, baseScrollContainer_viewPort_resizeHandler);
+			this.addEventListener("mousedown", baseScrollContainer_mousedownHandler);
+			this._scroller = new Scroller(baseScrollContainer_scroller_scrollCallback);
+			this._scroller.options.scrollingComplete = baseScrollContainer_scroller_scrollingCompleteCallback;
 			
 			this.mask = new Shape();
 		}
@@ -316,8 +310,8 @@ package feathers.controls.supportClasses
 				touches = [nativeEvent];
 			}
 			this._scroller.doTouchStart(touches, nativeEvent.timeStamp);
-			this.getStage().addEventListener("stagemousemove", this.baseScrollContainer_stage_stagemousemoveHandler);
-			this.getStage().addEventListener("stagemouseup", this.baseScrollContainer_stage_stagemouseupHandler);
+			this.getStage().addEventListener("stagemousemove", baseScrollContainer_stage_stagemousemoveHandler);
+			this.getStage().addEventListener("stagemouseup", baseScrollContainer_stage_stagemouseupHandler);
 		}
 		
 		/**
@@ -343,8 +337,8 @@ package feathers.controls.supportClasses
 		protected function baseScrollContainer_stage_stagemouseupHandler(event:createjs.MouseEvent):void
 		{
 			this._scroller.doTouchEnd(event.nativeEvent.timeStamp);
-			this.getStage().removeEventListener("stagemousemove", this.baseScrollContainer_stage_stagemousemoveHandler);
-			this.getStage().removeEventListener("stagemouseup", this.baseScrollContainer_stage_stagemouseupHandler);
+			this.getStage().removeEventListener("stagemousemove", baseScrollContainer_stage_stagemousemoveHandler);
+			this.getStage().removeEventListener("stagemouseup", baseScrollContainer_stage_stagemouseupHandler);
 		}
 		
 		/**

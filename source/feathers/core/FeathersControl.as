@@ -34,11 +34,8 @@ package feathers.core
 			super();
 			this._invalidationFlags = {};
 			this._delayedInvalidationFlags = {};
-			this["feathersControl_addedHandler"] = this.feathersControl_addedHandler.bind(this);
-			this.addEventListener("added", this.feathersControl_addedHandler);
-			this["feathersControl_removedHandler"] = this.feathersControl_removedHandler.bind(this);
-			this.addEventListener("removed", this.feathersControl_removedHandler);
-			this["feathersControl_waitForStage_tickHandler"] = this.feathersControl_waitForStage_tickHandler.bind(this);
+			this.addEventListener("added", feathersControl_addedHandler);
+			this.addEventListener("removed", feathersControl_removedHandler);
 		}
 		
 		/**
@@ -785,7 +782,7 @@ package feathers.core
 			}
 			else
 			{
-				this.addEventListener("tick", this.feathersControl_waitForStage_tickHandler);
+				this.addEventListener("tick", feathersControl_waitForStage_tickHandler);
 			}
 		}
 		
@@ -796,7 +793,7 @@ package feathers.core
 		{
 			this._depth = -1;
 			this._validationQueue = null;
-			this.removeEventListener("tick", this.feathersControl_waitForStage_tickHandler);
+			this.removeEventListener("tick", feathersControl_waitForStage_tickHandler);
 		}
 		
 		/**
@@ -809,7 +806,7 @@ package feathers.core
 			{
 				return;
 			}
-			this.removeEventListener("tick", this.feathersControl_waitForStage_tickHandler);
+			this.removeEventListener("tick", feathersControl_waitForStage_tickHandler);
 			this.prepareForStage(stage);
 		}
 	}

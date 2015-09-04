@@ -43,8 +43,7 @@ package feathers.core
 		{
 			this._delayedQueue = new <IValidating>[];
 			this._queue = new <IValidating>[];
-			this["validationQueue_stage_tickHandler"] = this.validationQueue_stage_tickHandler.bind(this);
-			stage.addEventListener("tick", this.validationQueue_stage_tickHandler);
+			stage.addEventListener("tick", validationQueue_stage_tickHandler);
 		}
 		
 		protected var _isValidating:Boolean = false;
