@@ -19,7 +19,6 @@ package feathers.controls.supportClasses
 			super();
 			this.viewPort = viewPort;
 			this.addChildAt(DisplayObject(this.viewPort), 0);
-			this._measureBounds = new MeasureBounds();
 			this.viewPort.addEventListener(FeathersEvent.RESIZE, baseScrollContainer_viewPort_resizeHandler);
 			this.addEventListener("mousedown", baseScrollContainer_mousedownHandler);
 			this._scroller = new Scroller(baseScrollContainer_scroller_scrollCallback);
@@ -188,7 +187,7 @@ package feathers.controls.supportClasses
 		/**
 		 * @private
 		 */
-		protected var _measureBounds:MeasureBounds;
+		protected var _measureBounds:MeasureBounds = new MeasureBounds();
 		
 		/**
 		 * @private

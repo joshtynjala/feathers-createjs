@@ -32,8 +32,6 @@ package feathers.core
 		public function FeathersControl()
 		{
 			super();
-			this._invalidationFlags = {};
-			this._delayedInvalidationFlags = {};
 			this.addEventListener("added", feathersControl_addedHandler);
 			this.addEventListener("removed", feathersControl_removedHandler);
 		}
@@ -353,12 +351,12 @@ package feathers.core
 		/**
 		 * @private
 		 */
-		protected var _invalidationFlags:Object;
+		protected var _invalidationFlags:Object = {};
 		
 		/**
 		 * @private
 		 */
-		protected var _delayedInvalidationFlags:Object;
+		protected var _delayedInvalidationFlags:Object = {};
 		
 		public function invalidate(flag:String = null):void
 		{

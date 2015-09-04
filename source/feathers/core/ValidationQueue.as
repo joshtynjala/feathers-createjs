@@ -41,8 +41,6 @@ package feathers.core
 		 */
 		public function ValidationQueue(stage:Stage)
 		{
-			this._delayedQueue = new <IValidating>[];
-			this._queue = new <IValidating>[];
 			stage.addEventListener("tick", validationQueue_stage_tickHandler);
 		}
 		
@@ -67,12 +65,12 @@ package feathers.core
 		/**
 		 * @private
 		 */
-		protected var _delayedQueue:Vector.<IValidating>;
+		protected var _delayedQueue:Vector.<IValidating> = new <IValidating>[];
 		
 		/**
 		 * @private
 		 */
-		protected var _queue:Vector.<IValidating>;
+		protected var _queue:Vector.<IValidating> = new <IValidating>[];
 		
 		/**
 		 * 

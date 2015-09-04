@@ -24,9 +24,7 @@ package feathers.controls
 		public function SimpleButton()
 		{
 			super();
-			this._measureBounds = new MeasureBounds();
 			this._currentState = ButtonState.UP;
-			this._skinsForStates = {};
 			this.addEventListener("rollover", simpleButton_rolloverHandler);
 			this.addEventListener("rollout", simpleButton_rolloutHandler);
 			this.addEventListener("mousedown", simpleButton_mousedownHandler);
@@ -135,12 +133,12 @@ package feathers.controls
 		/**
 		 * @private
 		 */
-		protected var _measureBounds:MeasureBounds;
+		protected var _measureBounds:MeasureBounds = new MeasureBounds();
 		
 		/**
 		 * @private
 		 */
-		protected var _skinsForStates:Object;
+		protected var _skinsForStates:Object = {};
 		
 		/**
 		 * Gets the background skin for a specific state.

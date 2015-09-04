@@ -18,14 +18,13 @@ package feathers.controls
 		 */
 		public function LayoutGroup()
 		{
-			this.items = new Vector.<DisplayObject>();
 			super();
 		}
 		
 		/**
 		 * 
 		 */
-		protected var items:Vector.<DisplayObject>;
+		protected var items:Vector.<DisplayObject> = new <DisplayObject>[];
 		
 		/**
 		 * @private
